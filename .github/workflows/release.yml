@@ -55,6 +55,9 @@ jobs:
             - name: Run Electron Builder for Legacy Windows
               if: ${{ matrix.platform == 'windows' }}
               run: |
+                  if (Test-Path "$env:LOCALAPPDATA\Electron\Cache") {
+                      Remove-Item -Path "$env:LOCALAPPDATA\Electron\Cache" -Recurse -Force
+                  }
                   pnpm electron-builder --windows --x64 --publish always --config.artifactName='${productName}-${os}7-${arch}.${ext}' --config.win.target='zip'
                   pnpm electron-builder --windows --x64 --publish always --config.artifactName='${productName}-${os}7-${arch}.${ext}' --config.win.target='nsis'
               env:

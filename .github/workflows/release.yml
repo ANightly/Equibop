@@ -20,6 +20,7 @@ jobs:
                       platform: linux
                     - os: windows-latest
                       platform: windows
+                      electron_legacy: v36.0.0-nightly.20250227
 
         steps:
             - uses: actions/checkout@v4
@@ -50,3 +51,14 @@ jobs:
                   pnpm electron-builder --${{ matrix.platform }} --publish always
               env:
                   GH_TOKEN: ${{ secrets.ETOKEN }}
+
+            - name: Run Electron Builder for Legacy Windows
+              if: ${{ matrix.platform == 'windows' }}
+              run: |
+                  pnpm electron-builder --windows --x64 --publish always --config.artifactName='${productName}-${os}7-${arch}.${ext}' --config.win.target='zip'
+                  pnpm electron-builder --windows --x64 --publish always --config.artifactName='${productName}-${os}7-${arch}.${ext}' --config.win.target='nsis'
+              env:
+                  GH_TOKEN: ${{ secrets.ETOKEN }}
+                  ELECTRON_MIRROR: "https://github.com/e3kskoy7wqk/Electron-for-windows-7/releases/download/"
+                  ELECTRON_CUSTOM_DIR: ${{ matrix.electron_legacy }}
+                  ELECTRON_CUSTOM_FILENAME: "dist.zip"
